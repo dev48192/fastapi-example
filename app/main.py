@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "https://ebc-app-9e775.web.app/",         # Firebase default domain
+    "https://ebc-app-9e775.web.app",         # Firebase default domain
 ]
 
 app.add_middleware(

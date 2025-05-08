@@ -1,23 +1,38 @@
-from fastapi import APIRouter, Response, Request, Cookie, HTTPException
+from fastapi import APIRouter, Response, Request, Cookie, HTTPException, Depends
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.firebase_config import firebase_auth
 from datetime import datetime, timedelta
-
+from app.db import SessionLocal, get_db
+from app.models.user import User  # Assuming you have a User model in models.py
 
 router = APIRouter()
 
 class OTPLoginRequest(BaseModel):
     id_token: str
 
-
 @router.post("/login")
-async def login(payload: OTPLoginRequest, response: Response):
+async def login(payload: OTPLoginRequest, response: Response, db: Session = Depends(get_db)):
     try:
+        # Verify Firebase ID token
         decoded = firebase_auth.verify_id_token(payload.id_token)
         uid = decoded["uid"]
         phone = decoded.get("phone_number")
 
-        # Set cookie for 5 days
+        # Check if the user exists in the database
+        user = db.query(User).filter(User.firebase_uid == uid).first()
+        
+        if not user:
+            # Create a new user if not exists
+            new_user = User(firebase_uid=uid, phone_number=phone)
+            db.add(new_user)
+            db.commit()
+            db.refresh(new_user)
+            message = "Registration successful, welcome aboard!"
+        else:
+            message = "Login successful, welcome back!"
+
+        # Set cookie for 5 days (can adjust based on your need)
         expires = datetime.utcnow() + timedelta(days=5)
         response.set_cookie(
             key="session",
@@ -28,7 +43,7 @@ async def login(payload: OTPLoginRequest, response: Response):
             expires=expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
         )
 
-        return {"message": "Login successful", "uid": uid, "phone": phone}
+        return {"message": message, "uid": uid, "phone": phone}
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Invalid ID token: {e}")
 
@@ -37,7 +52,7 @@ async def logout(response: Response):
     response.delete_cookie("session")
     return {"message": "Logged out successfully"}
 
-@router.post("/profile")
+@router.get("/profile")
 async def profile(request: Request):
     id_token = request.cookies.get("session")
     if not id_token:
@@ -48,6 +63,3 @@ async def profile(request: Request):
         return {"uid": decoded["uid"], "phone": decoded.get("phone_number")}
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Invalid session: {e}")
-
-    
-      

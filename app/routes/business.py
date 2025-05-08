@@ -31,6 +31,6 @@ async def update_or_create_business(
         "id": business.id,
         "name": business.name,
         "address": business.address,
-        "gst_number": business.gst_number,
+        "gst_number": business.gstin,
         "business_type": business.business_type
     }}

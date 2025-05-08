@@ -1,9 +1,15 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import List, Optional
 
-class OfferingCreate(BaseModel):
+class OfferingItem(BaseModel):
     catalog_item_id: int
     min_order_quantity: Optional[float] = None
+    brand_ids: List[int]
 
 class OfferingsBatchCreate(BaseModel):
-    offerings: List[OfferingCreate]
+    offerings: List[OfferingItem]
+
+
+class OfferingUpdateRequest(BaseModel):
+    min_order_quantity: Optional[float] = None
+    brand_ids: Optional[List[int]] = None

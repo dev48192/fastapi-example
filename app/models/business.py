@@ -9,7 +9,7 @@ class Business(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    business_name = Column(String, nullable=False)
+    name = Column(String, nullable=False)
     gst_number = Column(String, nullable=True)
     address = Column(String, nullable=True)
     business_type = Column(Enum("Retailer", "Wholesaler", "Manufacturer", name="business_type_enum"), nullable=True)

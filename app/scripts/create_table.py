@@ -2,7 +2,7 @@
 
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  # Add project root to path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))  # Add project root to path
 
 from app.db import engine, Base  # Adjusted to the correct import path
 import app.models  # Import models to register them

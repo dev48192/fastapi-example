@@ -8,7 +8,7 @@ class BusinessTypeEnum(str, Enum):
     manufacturer = "Manufacturer"
 
 class BusinessUpdate(BaseModel):
-    name: Optional[str]
-    address: Optional[str]
-    gstin: Optional[str]
-    business_type: Optional[BusinessTypeEnum]
+    name: Optional[str] = None
+    address: Optional[str] = None
+    gstin: Optional[str] = None
+    business_type: Optional[BusinessTypeEnum] = None

@@ -1,18 +1,18 @@
 # utils/auth_utils.py
 
 from fastapi import Request, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.firebase_config import firebase_auth
 from app.db import get_db
 from app.models import User
 
-async def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
-    id_token = request.cookies.get("session")
-    if not id_token:
-        raise HTTPException(status_code=401, detail="No session cookie found")
+bearer_scheme = HTTPBearer()
 
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme), db: Session = Depends(get_db)) -> User:
     try:
-        decoded = firebase_auth.verify_id_token(id_token)
+        decoded = firebase_auth.verify_id_token(credentials.credentials)
         uid = decoded["uid"]
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid or expired session")

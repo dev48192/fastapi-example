@@ -31,19 +31,7 @@ async def login(payload: OTPLoginRequest, response: Response, db: Session = Depe
             message = "Registration successful, welcome aboard!"
         else:
             message = "Login successful, welcome back!"
-
-        # Set cookie for 5 days (can adjust based on your need)
-        expires = datetime.utcnow() + timedelta(days=5)
-        response.set_cookie(
-            key="session",
-            value=payload.id_token,
-            httponly=True,
-            secure=True,  # Set to False for local dev if needed
-            samesite="None",
-            # domain="fastapi-example-kxp8.onrender.com",
-            expires=expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
-        )
-
+            
         return {
             "message": message,
             "user":  {

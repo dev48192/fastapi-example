@@ -1,11 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from app.routes import user, auth, business, offering
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 origins = [
-    "https://ebc-app-9e775.web.app",         # Firebase default domain
+    "https://ebc-app-9e775.web.app",         # Firebase default 
+    "https://ebc-app-9e775.firebaseapp.com"
 ]
 
 app.add_middleware(
@@ -20,6 +21,11 @@ app.include_router(auth, prefix="/api/auth")
 app.include_router(user, prefix="/api")
 app.include_router(business, prefix="/api")
 app.include_router(offering, prefix="/api")
+
+@app.get("/debug/cookies")
+def debug_cookies(request: Request):
+    # Return the cookies sent in the request
+    return {"cookies": request.cookies}
 
 @app.get("/")
 def root():

@@ -43,7 +43,18 @@ async def login(payload: OTPLoginRequest, response: Response, db: Session = Depe
             expires=expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
         )
 
-        return {"message": message, "uid": uid, "phone": phone}
+        return {
+            "message": message,
+            "user":  {
+                "uid": user.firebase_uid,
+                "phone": user.phone_number,
+                "created_at": user.created_at, 
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "is_seller": user.is_seller
+            }
+        }
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Invalid ID token: {e}")
 

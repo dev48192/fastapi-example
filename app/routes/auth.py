@@ -53,13 +53,31 @@ async def logout(response: Response):
     return {"message": "Logged out successfully"}
 
 @router.get("/profile")
-async def profile(request: Request):
+async def profile(request: Request, db: Session = Depends(get_db)):
     id_token = request.cookies.get("session")
     if not id_token:
         raise HTTPException(status_code=401, detail="No session cookie found")
 
     try:
         decoded = firebase_auth.verify_id_token(id_token)
-        return {"uid": decoded["uid"], "phone": decoded.get("phone_number")}
+        uid = decoded["uid"]
+        
+        # Fetch user from database using UID
+        user = db.query(User).filter(User.firebase_uid == uid).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found in database")
+
+        # Return user info (sanitize sensitive fields as needed)
+        return {
+            "uid": user.firebase_uid,
+            "phone": user.phone_number,
+            "created_at": user.created_at, 
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "is_seller": user.is_seller
+        }
+
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Invalid session: {e}")
+

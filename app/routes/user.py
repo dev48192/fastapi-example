@@ -22,6 +22,7 @@ async def update_profile(
     return {"message": "Profile updated", "user": {
         "first_name": current_user.first_name,
         "last_name": current_user.last_name,
-        "email": current_user.email
+        "email": current_user.email,
+        "is_seller": current_user.is_seller
     }}
 

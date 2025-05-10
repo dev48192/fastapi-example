@@ -39,8 +39,8 @@ async def login(payload: OTPLoginRequest, response: Response, db: Session = Depe
             value=payload.id_token,
             httponly=True,
             secure=True,  # Set to False for local dev if needed
-            samesite="Lax",
-            domain="fastapi-example-kxp8.onrender.com",
+            samesite="None",
+            # domain="fastapi-example-kxp8.onrender.com",
             expires=expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
         )
 

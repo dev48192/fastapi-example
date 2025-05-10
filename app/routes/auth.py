@@ -39,7 +39,7 @@ async def login(payload: OTPLoginRequest, response: Response, db: Session = Depe
             value=payload.id_token,
             httponly=True,
             secure=True,  # Set to False for local dev if needed
-            samesite="Lax",
+            samesite="None",
             expires=expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
         )
 
